@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get_ip/get_ip.dart';
+import 'package:intl/intl.dart';
 
 void main() => runApp(MyApp());
 
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter First'),
+      home: MyHomePage(title: 'Get my IP address'),
     );
   }
 }
@@ -44,17 +46,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  String _myIp = "unknown";
+  String _time = "unknown";
 
-  void _incrementCounter() {
+  @override
+  void initState() {
+    super.initState();
+    _setIp();
+  }
+
+  void _setIp() async {
+    String myAddress = await GetIp.ipAddress;
+    var formatter = new DateFormat('HH:mm:ss.sss');
+    String now = formatter.format(new DateTime.now());
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _myIp = myAddress;
+      _time = now;
     });
+  }
+
+  void _onClick() {
+    _setIp();
   }
 
   @override
@@ -92,19 +104,26 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Clicked:',
+              '$_myIp',
+              style: Theme.of(context).textTheme.display4,
+            ),
+            Container(
+              height: 80,
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
+              '$_time',
+              style: TextStyle(
+                  fontSize: 40,
+                  color: Colors.black45,
+                  fontWeight: FontWeight.w300),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+        onPressed: _onClick,
+        tooltip: 'Increment and get IP',
+        child: Icon(Icons.subtitles),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
